@@ -1,0 +1,86 @@
+micronaut:
+  server:
+    port: 8080
+
+logger.levels:
+  no.ssb.rawdata.converter: DEBUG
+
+endpoints:
+  all:
+    sensitive: false
+  prometheus:
+    sensitive: false
+
+services:
+  dapla-oauth:
+    token-provider: mock
+  dapla-data-access:
+    impl: MOCK
+  dapla-metadata-distributor:
+    impl: MOCK
+
+pseudo.secrets:
+  somesecret:
+    content: testsecretcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
+    type: AES256
+
+rawdata.sources:
+  somerawdata:
+    rawdata-client:
+      provider: filesystem
+      local-temp-folder: temp
+      avro-file:
+        max.seconds: 3600
+        max.bytes: 10485760
+        sync.interval: 500000
+      filesystem:
+        storage-folder: ../localenv/rawdata/somerawdata
+      listing:
+        min-interval-seconds: 0
+
+rawdata.converter:
+  job-scheduler:
+    max-concurrent-jobs: 10
+  jobs:
+    base:
+      prototype: true
+      debug:
+        dryrun: false
+        development-mode: true
+        log-failed-rawdata: false
+        store-failed-rawdata: true
+        local-storage-path: ./rawdata-messages-output
+      converter-settings:
+        rawdata-samples: 1
+        max-records-before-flush: 1000000
+        max-seconds-before-flush: 300
+      rawdata-source:
+        name: somerawdata
+        encryption-key-id: rawdata-encryption-credentials-dummy-key
+        encryption-key-version: 1
+        encryption-salt: blah
+      target-storage:
+        type: filesystem
+        root: file://../localenv/datastore
+      target-dataset:
+        valuation: INTERNAL
+        type: BOUNDED
+        publish-metadata: false
+      pseudo-rules:
+        - name: fodselsnummer
+          pattern: '**/{folkeregisteridentifikator,foedselsEllerDNummer}'
+          func: fpe-fnr(somesecret)
+
+    job-blah:
+      parent: base
+      active-by-default: false
+      rawdata-source:
+        topic: somerawdata-testtopic-202009211735
+        initial-position: LAST
+      target-storage:
+        path: /kilde/somerawdata/raadata/202009211735
+        version: 1598553650000
+      pseudo-rules:
+        - name: navn
+          pattern: '**/{navn}'
+          func: fpe-anychar(somesecret)

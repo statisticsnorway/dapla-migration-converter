@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>no.ssb.rawdata.converter.app</groupId>
+        <artifactId>rawdata-converter-app-parent</artifactId>
+        <version>0.10.3-SNAPSHOT</version>
+        <relativePath />
+    </parent>
+
+    <artifactId>rawdata-converter-app-migration</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Rawdata Converter App - Migration</name>
+
+    <properties>
+        <exec.mainClass>no.ssb.rawdata.converter.app.migration.Application</exec.mainClass>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/statisticsnorway/rawdata-converter-app-migration.git</connection>
+        <developerConnection>scm:git:git@github.com:statisticsnorway/rawdata-converter-app-migration.git</developerConnection>
+        <url>https://github.com/statisticsnorway/rawdata-converter-app-migration</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>no.ssb.dapla.ingest</groupId>
+            <artifactId>dapla-rawdata-metadata-api</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.micronaut.build</groupId>
+                <artifactId>micronaut-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+
+                    <!-- Uncomment to enable incremental compilation -->
+                    <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
+                    <annotationProcessorPaths combine.children="append">
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Amicronaut.processing.group=no.ssb.rawdata.converter.app</arg>
+                        <arg>-Amicronaut.processing.module=rawdata-converter-app-migration</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>ssb-bip</id>
+            <repositories>
+                <repository>
+                    <id>ssb-bip-releases</id>
+                    <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>ssb-bip-snapshots</id>
+                    <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>ssb-bip-releases</id>
+                    <name>SSB Nexus Releases</name>
+                    <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>ssb-bip-snapshots</id>
+                    <name>SSB Snapshot Repository</name>
+                    <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
+</project>
