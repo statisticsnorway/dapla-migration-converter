@@ -9,7 +9,7 @@
         <relativePath />
     </parent>
 
-    <artifactId>rawdata-converter-app-migration</artifactId>
+    <artifactId>dapla-migration-converter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Rawdata Converter App - Migration</name>
 
