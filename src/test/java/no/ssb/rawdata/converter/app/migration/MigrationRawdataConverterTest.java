@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 @Disabled
 public class MigrationRawdataConverterTest {
 
@@ -28,7 +26,8 @@ public class MigrationRawdataConverterTest {
         // TODO: Set app config
 
         MigrationRawdataConverter converter = new MigrationRawdataConverter(config, new ValueInterceptorChain());
-        converter.init(messages.index().values());
+
+        converter.init(null);
         ConversionResult res = converter.convert(messages.index().get("123456")); // TODO: replace with message position
     }
 
