@@ -25,6 +25,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -155,7 +156,9 @@ public class MigrationRawdataConverter implements RawdataConverter {
 
         byte[] entry = rawdataMessage.get(RAWDATA_ITEMNAME_ENTRY);
         try (CSVParser parser = csvFormat.parse(new InputStreamReader(new ByteArrayInputStream(entry), StandardCharsets.UTF_8))) {
-            for (CSVRecord csvRecord : parser) {
+            Iterator<CSVRecord> iterator = parser.iterator();
+            if (iterator.hasNext()) {
+                CSVRecord csvRecord = iterator.next();
                 GenericRecordBuilder avroRecordBuilder = new GenericRecordBuilder(dataSchema);
                 for (int i = 0; i < csvRecord.size(); i++) {
                     String value = csvRecord.get(i);
@@ -165,6 +168,9 @@ public class MigrationRawdataConverter implements RawdataConverter {
                 GenericData.Record avroRecord = avroRecordBuilder.build();
                 resultBuilder.appendCounter(MetricName.RAWDATA_RECORDS_TOTAL, 1);
                 resultBuilder.withRecord(FIELDNAME_DATA, avroRecord);
+                if (iterator.hasNext()) {
+                    throw new CsvRawdataConverterException("More than one line in CSV file!");
+                }
             }
         } catch (Exception e) {
             resultBuilder.addFailure(e);
