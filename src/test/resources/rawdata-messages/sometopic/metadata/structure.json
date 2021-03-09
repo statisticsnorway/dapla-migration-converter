@@ -1,0 +1,58 @@
+{
+  "data": {
+    "encryption": {
+      "algorithm": "aes128",
+      "key": "key-id-ab43gl",
+      "version": "1",
+      "salt": "the-salt"
+    },
+    "contentType": "text/csv",
+    "structure": {
+      "type": "inline",
+      "args": {
+        "delimiter": ";"
+      },
+      "columns": [
+        {
+          "name": "kommuneregion",
+          "type": "STRING",
+          "role": "IDENTIFIER"
+        },
+        {
+          "name": "periode",
+          "type": "VARCHAR2",
+          "role": "IDENTIFIER"
+        },
+        {
+          "name": "elg",
+          "type": "BOOLEAN",
+          "role": "MEASURE"
+        },
+        {
+          "name": "valid-from",
+          "type": "DATETIME",
+          "format": "yyyy-mm-dd'T'HH:MM:SSZ",
+          "role": "MEASURE"
+        }
+      ],
+      "type-mapping": [
+        {
+          "from-type": "STRING",
+          "to-type": "String"
+        },
+        {
+          "from-type": "VARCHAR2",
+          "to-type": "String"
+        },
+        {
+          "from-type": "DATETIME",
+          "to-type": "Boolean"
+        },
+        {
+          "from-type": "DATETIME",
+          "to-type": "DateTime"
+        }
+      ]
+    }
+  }
+}

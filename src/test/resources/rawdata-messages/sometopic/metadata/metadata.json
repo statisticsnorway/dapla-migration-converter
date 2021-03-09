@@ -1,0 +1,29 @@
+{
+  "source": {
+    "server": "sas-compute-1",
+    "path": "/ssb/stamme01/the/path"
+  },
+  "tags": [
+    "tag1",
+    "tag2"
+  ],
+  "valuation" : "INTERNAL",
+  "boundary": {
+    "type": "BOUNDED",
+    "resolution": "day",
+    "from": {
+      "inclusive": true,
+      "year": 2019,
+      "month": 1,
+      "day": 1
+    },
+    "to": {
+      "inclusive": true,
+      "year": 2019,
+      "month": 12,
+      "day": 31
+    }
+  },
+  "name": "Name of dataset",
+  "description": "A good description of the dataset"
+}
