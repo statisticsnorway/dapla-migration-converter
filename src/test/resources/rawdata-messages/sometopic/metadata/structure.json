@@ -44,7 +44,7 @@
           {
             "name": "sist_observert_i_hovedstaden",
             "type": "ZonedDateTime",
-            "format": "yyyy-MM-dd'T'HH:mm:ssZ"
+            "format": "yyyy-MM-dd'T'HH:mm:ssX"
           },
           {
             "name": "leggetid",

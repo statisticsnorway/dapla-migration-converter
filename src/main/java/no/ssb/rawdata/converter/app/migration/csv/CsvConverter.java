@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -68,35 +69,40 @@ public class CsvConverter implements MigrationConverter {
         Function<String, Object>[] csvToAvroMapping = new Function[csvHeader.length];
         for (int i = 0; i < columns.size(); i++) {
             CsvSchema.Column column = columns.get(i);
-            if ("String".equals(column.type())) {
-                fields.optionalString(column.name());
+            String avroColumnName = avroHeader[i];
+            String columnType = column.type();
+            if ("String".equals(columnType)) {
+                fields.optionalString(avroColumnName);
                 csvToAvroMapping[i] = str -> str;
-            } else if ("Boolean".equals(column.type())) {
-                fields.optionalBoolean(column.name());
+            } else if ("Boolean".equals(columnType)) {
+                fields.optionalBoolean(avroColumnName);
                 csvToAvroMapping[i] = Boolean::parseBoolean;
-            } else if ("Long".equals(column.type())) {
-                fields.optionalLong(column.name());
+            } else if ("Long".equals(columnType)) {
+                fields.optionalLong(avroColumnName);
                 csvToAvroMapping[i] = Long::parseLong;
-            } else if ("Integer".equals(column.type())) {
-                fields.optionalLong(column.name());
+            } else if ("Integer".equals(columnType)) {
+                fields.optionalLong(avroColumnName);
                 csvToAvroMapping[i] = Integer::parseInt;
-            } else if ("Double".equals(column.type())) {
-                fields.optionalDouble(column.name());
+            } else if ("Double".equals(columnType)) {
+                fields.optionalDouble(avroColumnName);
                 csvToAvroMapping[i] = Double::parseDouble;
-            } else if ("Float".equals(column.type())) {
-                fields.optionalFloat(column.name());
+            } else if ("Float".equals(columnType)) {
+                fields.optionalFloat(avroColumnName);
                 csvToAvroMapping[i] = Float::parseFloat;
-            } else if ("ZonedDateTime".equals(column.type())) {
-                fields.optionalString(column.name());
-                csvToAvroMapping[i] = ZonedDateTime::parse;
-            } else if ("LocalTime".equals(column.type())) {
-                fields.optionalString(column.name());
-                csvToAvroMapping[i] = LocalTime::parse;
-            } else if ("LocalDate".equals(column.type())) {
-                fields.optionalString(column.name());
-                csvToAvroMapping[i] = LocalDate::parse;
+            } else if ("ZonedDateTime".equals(columnType)) {
+                fields.optionalString(avroColumnName);
+                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
+                csvToAvroMapping[i] = str -> ZonedDateTime.parse(str, pattern);
+            } else if ("LocalTime".equals(columnType)) {
+                fields.optionalString(avroColumnName);
+                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
+                csvToAvroMapping[i] = str -> LocalTime.parse(str, pattern);
+            } else if ("LocalDate".equals(columnType)) {
+                fields.optionalString(avroColumnName);
+                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
+                csvToAvroMapping[i] = str -> LocalDate.parse(str, pattern);
             } else {
-                throw new RuntimeException("Type not supported: " + column.type());
+                throw new RuntimeException("Type not supported: " + columnType);
             }
         }
         avroSchema = fields.endRecord();

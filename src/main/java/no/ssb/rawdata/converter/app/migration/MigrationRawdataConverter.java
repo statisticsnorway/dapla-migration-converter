@@ -11,12 +11,10 @@ import no.ssb.rawdata.converter.core.convert.ConversionResult.ConversionResultBu
 import no.ssb.rawdata.converter.core.convert.RawdataConverter;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.schema.AggregateSchemaBuilder;
-import no.ssb.rawdata.converter.core.schema.DcManifestSchemaAdapter;
 import no.ssb.rawdata.converter.metrics.MetricName;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
 import java.net.URI;
@@ -30,19 +28,13 @@ public class MigrationRawdataConverter implements RawdataConverter {
     private static final String FIELDNAME_MANIFEST = "manifest";
     private static final String FIELDNAME_COLLECTOR = "collector";
 
-    private final MigrationRawdataConverterConfig converterConfig;
-    private final ValueInterceptorChain valueInterceptorChain;
-
-    private DcManifestSchemaAdapter dcManifestSchemaAdapter;
     private Schema manifestSchema;
     private Schema targetAvroSchema;
-    private Schema dataSchema;
+    private Schema collectorManifestSchema;
 
     private final Map<String, MigrationConverter> delegateByDocumentId = new LinkedHashMap<>();
 
     public MigrationRawdataConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain) {
-        this.converterConfig = converterConfig;
-        this.valueInterceptorChain = valueInterceptorChain;
     }
 
     @Override
@@ -61,13 +53,15 @@ public class MigrationRawdataConverter implements RawdataConverter {
         // RawdataMetadata rawdataMetadata = RawdataMetadata.of(metadataClient.get("metadata.json")).build();
         RawdataStructure rawdataStructure = RawdataStructure.of(metadataClient.get("structure.json")).build();
 
+        collectorManifestSchema = SchemaBuilder.record(FIELDNAME_COLLECTOR)
+                .fields()
+                .requiredString("ulid")
+                .requiredString("position")
+                .requiredString("timestamp")
+                .endRecord();
+
         manifestSchema = new AggregateSchemaBuilder("dapla.rawdata.manifest")
-                .schema(FIELDNAME_COLLECTOR, SchemaBuilder.record(FIELDNAME_COLLECTOR)
-                        .fields()
-                        .requiredString("ulid")
-                        .requiredString("position")
-                        .requiredString("timestamp")
-                        .endRecord())
+                .schema(FIELDNAME_COLLECTOR, collectorManifestSchema)
                 .build();
 
         String targetNamespace = "dapla.rawdata.migration." + metadataClient.topic();
@@ -123,7 +117,13 @@ public class MigrationRawdataConverter implements RawdataConverter {
     public ConversionResult convert(RawdataMessage rawdataMessage) {
         ConversionResultBuilder resultBuilder = ConversionResult.builder(targetAvroSchema, rawdataMessage);
 
-        addManifest(rawdataMessage, resultBuilder);
+        resultBuilder.withRecord(FIELDNAME_MANIFEST, new GenericRecordBuilder(manifestSchema)
+                .set(FIELDNAME_COLLECTOR, new GenericRecordBuilder(collectorManifestSchema)
+                        .set("ulid", rawdataMessage.ulid().toString())
+                        .set("position", rawdataMessage.position())
+                        .set("timestamp", rawdataMessage.timestamp())
+                        .build())
+                .build());
 
         for (Map.Entry<String, byte[]> entry : rawdataMessage.data().entrySet()) {
             String documentId = entry.getKey();
@@ -138,13 +138,5 @@ public class MigrationRawdataConverter implements RawdataConverter {
         resultBuilder.appendCounter(MetricName.RAWDATA_RECORDS_TOTAL, 1);
 
         return resultBuilder.build();
-    }
-
-    void addManifest(RawdataMessage rawdataMessage, ConversionResultBuilder resultBuilder) {
-        GenericRecord manifest = new GenericRecordBuilder(manifestSchema)
-                .set(FIELDNAME_COLLECTOR, dcManifestSchemaAdapter.newRecord(rawdataMessage, valueInterceptorChain))
-                .build();
-
-        resultBuilder.withRecord(FIELDNAME_MANIFEST, manifest);
     }
 }
