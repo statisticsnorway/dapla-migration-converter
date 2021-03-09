@@ -18,6 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -77,8 +80,21 @@ public class CsvConverter implements MigrationConverter {
             } else if ("Integer".equals(column.type())) {
                 fields.optionalLong(column.name());
                 csvToAvroMapping[i] = Integer::parseInt;
-            } else if ("DateTime".equals(column.type())) {
-                throw new RuntimeException("TODO: DateTime csv to avro mapping");
+            } else if ("Double".equals(column.type())) {
+                fields.optionalDouble(column.name());
+                csvToAvroMapping[i] = Double::parseDouble;
+            } else if ("Float".equals(column.type())) {
+                fields.optionalFloat(column.name());
+                csvToAvroMapping[i] = Float::parseFloat;
+            } else if ("ZonedDateTime".equals(column.type())) {
+                fields.optionalString(column.name());
+                csvToAvroMapping[i] = ZonedDateTime::parse;
+            } else if ("LocalTime".equals(column.type())) {
+                fields.optionalString(column.name());
+                csvToAvroMapping[i] = LocalTime::parse;
+            } else if ("LocalDate".equals(column.type())) {
+                fields.optionalString(column.name());
+                csvToAvroMapping[i] = LocalDate::parse;
             } else {
                 throw new RuntimeException("Type not supported: " + column.type());
             }

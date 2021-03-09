@@ -2,59 +2,58 @@
   "data": {
     "encryption": {
       "algorithm": "aes128",
-      "key": "key-id-ab43gl",
+      "key": "the-key-id",
       "version": "1",
       "salt": "the-salt"
     },
     "contentType": "text/csv",
     "structure": {
-      "uri-samples": [
-        "inline:csv",
-        "inline:kostra",
-        "inline:oracle",
-        "metadata:schema.kostra",
-        "metadata:example-schema.xsd",
-        "http://mydomain.com/schema.xsd",
-        "http://mydomain.com/schema.oracle"
-      ],
       "uri": "inline:csv",
       "schema": {
         "delimiter": ";",
         "columns": [
           {
-            "name": "kommuneregion",
+            "name": "navn",
             "type": "String"
           },
           {
-            "name": "periode",
-            "type": "String"
-          },
-          {
-            "name": "elg",
-            "type": "Boolean"
-          },
-          {
-            "name": "antall",
-            "type": "Integer"
-          },
-          {
-            "name": "pris",
-            "type": "Float"
-          },
-          {
-            "name": "valid-from",
-            "type": "Date",
+            "name": "fødselsdato",
+            "type": "LocalDate",
             "format": "yyyy-MM-dd"
           },
           {
-            "name": "valid-from",
-            "type": "Time",
-            "format": "HH:mm:ss"
+            "name": "bosted_kommune_nr",
+            "type": "String"
           },
           {
-            "name": "valid-from",
-            "type": "DateTime",
+            "name": "inntekt_siste_år",
+            "type": "Long"
+          },
+          {
+            "name": "antall_forseelser",
+            "type": "Integer"
+          },
+          {
+            "name": "karbonavtrykk_CO2_Tonn_per_Dag",
+            "type": "Double"
+          },
+          {
+            "name": "bevegelse_Mil_per_Dag",
+            "type": "Float"
+          },
+          {
+            "name": "sist_observert_i_hovedstaden",
+            "type": "ZonedDateTime",
             "format": "yyyy-MM-dd'T'HH:mm:ssZ"
+          },
+          {
+            "name": "leggetid",
+            "type": "LocalTime",
+            "format": "HH:mm"
+          },
+          {
+            "name": "militær_trening",
+            "type": "Boolean"
           }
         ]
       }
