@@ -11,8 +11,6 @@ import no.ssb.service.provider.api.ProviderConfigurator;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +49,6 @@ public class MigrationRawdataConverterTest {
                     System.out.printf("Message: %s%n", res.getGenericRecord().toString());
                 }
             }
-
         }
     }
 
@@ -67,12 +64,5 @@ public class MigrationRawdataConverterTest {
                     .put("data", "Frida Hansen;1981-08-16;4329;685000;0;0.4282;1.05;2021-03-08T14:14:14Z;22:25;false".getBytes(StandardCharsets.UTF_8))
                     .position("3").build());
         }
-    }
-
-    @Test
-    public void test() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = LocalDate.parse(" 1973-04-01", pattern);
-        date.toString();
     }
 }
