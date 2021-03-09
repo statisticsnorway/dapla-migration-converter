@@ -8,51 +8,56 @@
     },
     "contentType": "text/csv",
     "structure": {
-      "type": "inline",
-      "args": {
-        "delimiter": ";"
-      },
-      "columns": [
-        {
-          "name": "kommuneregion",
-          "type": "STRING",
-          "role": "IDENTIFIER"
-        },
-        {
-          "name": "periode",
-          "type": "VARCHAR2",
-          "role": "IDENTIFIER"
-        },
-        {
-          "name": "elg",
-          "type": "BOOLEAN",
-          "role": "MEASURE"
-        },
-        {
-          "name": "valid-from",
-          "type": "DATETIME",
-          "format": "yyyy-mm-dd'T'HH:MM:SSZ",
-          "role": "MEASURE"
-        }
+      "uri-samples": [
+        "inline:csv",
+        "inline:kostra",
+        "inline:oracle",
+        "metadata:schema.kostra",
+        "metadata:example-schema.xsd",
+        "http://mydomain.com/schema.xsd",
+        "http://mydomain.com/schema.oracle"
       ],
-      "type-mapping": [
-        {
-          "from-type": "STRING",
-          "to-type": "String"
-        },
-        {
-          "from-type": "VARCHAR2",
-          "to-type": "String"
-        },
-        {
-          "from-type": "DATETIME",
-          "to-type": "Boolean"
-        },
-        {
-          "from-type": "DATETIME",
-          "to-type": "DateTime"
-        }
-      ]
+      "uri": "inline:csv",
+      "schema": {
+        "delimiter": ";",
+        "columns": [
+          {
+            "name": "kommuneregion",
+            "type": "String"
+          },
+          {
+            "name": "periode",
+            "type": "String"
+          },
+          {
+            "name": "elg",
+            "type": "Boolean"
+          },
+          {
+            "name": "antall",
+            "type": "Integer"
+          },
+          {
+            "name": "pris",
+            "type": "Float"
+          },
+          {
+            "name": "valid-from",
+            "type": "Date",
+            "format": "yyyy-MM-dd"
+          },
+          {
+            "name": "valid-from",
+            "type": "Time",
+            "format": "HH:mm:ss"
+          },
+          {
+            "name": "valid-from",
+            "type": "DateTime",
+            "format": "yyyy-MM-dd'T'HH:mm:ssZ"
+          }
+        ]
+      }
     }
   }
 }
