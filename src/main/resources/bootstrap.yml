@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: rawdata-converter-app-migration
+    name: dapla-migration-converter
 #  config-client:
 #    enabled: true
 gcp:
