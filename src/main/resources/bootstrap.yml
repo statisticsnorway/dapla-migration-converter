@@ -1,8 +1,8 @@
 micronaut:
   application:
     name: rawdata-converter-app-migration
-  config-client:
-    enabled: true
+#  config-client:
+#    enabled: true
 gcp:
   project-id: dev-sirius
   credentials:

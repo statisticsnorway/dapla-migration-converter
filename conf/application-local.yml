@@ -18,6 +18,10 @@ services:
     impl: MOCK
   dapla-metadata-distributor:
     impl: MOCK
+  secrets:
+    impl: MOCK
+    overrides:
+      some-overridden-secret-id: blah
 
 pseudo.secrets:
   somesecret:
