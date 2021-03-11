@@ -8,7 +8,7 @@ import no.ssb.rawdata.api.RawdataMetadataClient;
 import no.ssb.rawdata.converter.app.migration.csv.CsvConverter;
 import no.ssb.rawdata.converter.core.convert.ConversionResult;
 import no.ssb.rawdata.converter.core.convert.ConversionResult.ConversionResultBuilder;
-import no.ssb.rawdata.converter.core.convert.RawdataConverter;
+import no.ssb.rawdata.converter.core.convert.RawdataConverterV2;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.schema.AggregateSchemaBuilder;
 import no.ssb.rawdata.converter.metrics.MetricName;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class MigrationRawdataConverter implements RawdataConverter {
+public class MigrationRawdataConverter implements RawdataConverterV2 {
 
     private static final String FIELDNAME_MANIFEST = "manifest";
     private static final String FIELDNAME_COLLECTOR = "collector";
@@ -38,7 +38,7 @@ public class MigrationRawdataConverter implements RawdataConverter {
     }
 
     @Override
-    public void init(RawdataMetadataClient metadataClient) {
+    public void initialize(RawdataMetadataClient metadataClient) {
         log.info("Determine target avro schema from metadata of topic: {}", metadataClient.topic());
 
         Set<String> keys = metadataClient.keys();

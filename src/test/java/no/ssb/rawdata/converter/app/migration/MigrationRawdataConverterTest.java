@@ -37,7 +37,7 @@ public class MigrationRawdataConverterTest {
 
             MigrationRawdataConverter converter = new MigrationRawdataConverter(config, new ValueInterceptorChain());
 
-            converter.init(rawdataClient.metadata("sometopic"));
+            converter.initialize(rawdataClient.metadata("sometopic"));
             try (RawdataConsumer consumer = rawdataClient.consumer("sometopic")) {
                 RawdataMessage message;
                 while ((message = consumer.receive(0, TimeUnit.SECONDS)) != null) {
