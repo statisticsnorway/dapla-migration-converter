@@ -14,7 +14,7 @@ import no.ssb.rawdata.converter.core.schema.AggregateSchemaBuilder;
 import no.ssb.rawdata.converter.metrics.MetricName;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
-import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
 import java.net.URI;
@@ -28,6 +28,9 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     private static final String FIELDNAME_MANIFEST = "manifest";
     private static final String FIELDNAME_COLLECTOR = "collector";
 
+    private final MigrationRawdataConverterConfig converterConfig;
+    private final ValueInterceptorChain valueInterceptorChain;
+
     private Schema manifestSchema;
     private Schema targetAvroSchema;
     private Schema collectorManifestSchema;
@@ -35,6 +38,8 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     private final Map<String, MigrationConverter> delegateByDocumentId = new LinkedHashMap<>();
 
     public MigrationRawdataConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain) {
+        this.converterConfig = converterConfig;
+        this.valueInterceptorChain = valueInterceptorChain;
     }
 
     @Override
@@ -86,7 +91,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
                 default -> throw new RuntimeException("structure.uri scheme not supported while determining converterType: " + uri.getScheme());
             };
             MigrationConverter converter = switch (converterType) {
-                case "csv" -> new CsvConverter(documentId, new CsvSchema(schemaBytes));
+                case "csv" -> new CsvConverter(converterConfig, valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
                 default -> throw new IllegalArgumentException("converterType not supported: " + converterType);
             };
             delegateByDocumentId.put(documentId, converter);
@@ -129,7 +134,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             String documentId = entry.getKey();
             MigrationConverter migrationConverter = delegateByDocumentId.get(documentId);
             try {
-                GenericData.Record documentRecord = migrationConverter.convert(rawdataMessage);
+                GenericRecord documentRecord = migrationConverter.convert(rawdataMessage);
                 resultBuilder.withRecord(documentId, documentRecord);
             } catch (Exception e) {
                 resultBuilder.addFailure(e);

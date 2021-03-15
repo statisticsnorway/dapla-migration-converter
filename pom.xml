@@ -31,9 +31,8 @@
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.8</version>
+            <groupId>no.ssb.avro.convert.csv</groupId>
+            <artifactId>avro-buddy-csv</artifactId>
         </dependency>
     </dependencies>
 

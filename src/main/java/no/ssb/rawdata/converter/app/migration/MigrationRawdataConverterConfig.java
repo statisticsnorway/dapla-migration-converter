@@ -1,19 +1,19 @@
 package no.ssb.rawdata.converter.app.migration;
 
-import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.convert.format.MapFormat;
 import lombok.Data;
 
-@ConfigurationProperties("rawdata.converter.migration")
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 public class MigrationRawdataConverterConfig {
 
     /**
-     * <p>Some config param</p>
-     *
-     * <p>Defaults to "default value"</p>
-     *
-     * TODO: Remove this
+     * Optional csv parser settings overrides.
+     * E.g. allowing to explicitly specify the delimiter character
      */
-    private String someParam = "default value";
+    @MapFormat(transformation = MapFormat.MapTransformation.FLAT)
+    private Map<String, Object> csvSettings = new HashMap<>();
 
 }

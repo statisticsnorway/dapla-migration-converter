@@ -18,8 +18,7 @@
           },
           {
             "name": "fødselsdato",
-            "type": "LocalDate",
-            "format": "yyyy-MM-dd"
+            "type": "String"
           },
           {
             "name": "bosted_kommune_nr",
@@ -43,13 +42,11 @@
           },
           {
             "name": "sist_observert_i_hovedstaden",
-            "type": "ZonedDateTime",
-            "format": "yyyy-MM-dd'T'HH:mm:ssX"
+            "type": "String"
           },
           {
             "name": "leggetid",
-            "type": "LocalTime",
-            "format": "HH:mm"
+            "type": "String"
           },
           {
             "name": "militær_trening",
