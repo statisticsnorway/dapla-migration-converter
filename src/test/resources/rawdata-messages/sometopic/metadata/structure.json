@@ -30,7 +30,7 @@
           },
           {
             "name": "antall_forseelser",
-            "type": "Integer"
+            "type": "Int"
           },
           {
             "name": "karbonavtrykk_CO2_Tonn_per_Dag",

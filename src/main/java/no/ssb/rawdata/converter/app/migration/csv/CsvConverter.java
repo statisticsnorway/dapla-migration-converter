@@ -51,7 +51,7 @@ public class CsvConverter implements MigrationConverter {
     DocumentMappings documentMappings;
 
     public Schema init(RawdataMetadataClient metadataClient) {
-        SchemaBuilder.FieldAssembler<Schema> fields = SchemaBuilder.record("item").fields();
+        SchemaBuilder.FieldAssembler<Schema> fields = SchemaBuilder.record(documentId).fields();
 
         List<CsvSchema.Column> columns = csvSchema.columns();
         String[] csvHeader = columns.stream()
@@ -71,8 +71,8 @@ public class CsvConverter implements MigrationConverter {
                 fields.optionalBoolean(avroColumnName);
             } else if ("Long".equals(columnType)) {
                 fields.optionalLong(avroColumnName);
-            } else if ("Integer".equals(columnType)) {
-                fields.optionalLong(avroColumnName);
+            } else if ("Int".equals(columnType)) {
+                fields.optionalInt(avroColumnName);
             } else if ("Double".equals(columnType)) {
                 fields.optionalDouble(avroColumnName);
             } else if ("Float".equals(columnType)) {
