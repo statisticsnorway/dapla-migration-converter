@@ -38,25 +38,10 @@ public class CsvConverter implements MigrationConverter {
         this.csvSchema = csvSchema;
     }
 
-    static class DocumentMappings {
-        final String[] csvHeader;
-        final String[] avroHeader;
-
-        DocumentMappings(String[] csvHeader, String[] avroHeader) {
-            this.csvHeader = csvHeader;
-            this.avroHeader = avroHeader;
-        }
-    }
-
-    DocumentMappings documentMappings;
-
     public Schema init(RawdataMetadataClient metadataClient) {
         SchemaBuilder.FieldAssembler<Schema> fields = SchemaBuilder.record(documentId).fields();
 
         List<CsvSchema.Column> columns = csvSchema.columns();
-        String[] csvHeader = columns.stream()
-                .map(CsvSchema.Column::name)
-                .toArray(String[]::new);
         String[] avroHeader = columns.stream()
                 .map(CsvSchema.Column::name)
                 .map(AvroUtils::formatToken)
@@ -82,8 +67,6 @@ public class CsvConverter implements MigrationConverter {
             }
         }
         avroSchema = fields.endRecord();
-
-        documentMappings = new DocumentMappings(csvHeader, avroHeader);
 
         csvParserSettings = new CsvParserSettings()
                 .delimiters(String.valueOf(csvSchema.delimiter()))
@@ -118,10 +101,6 @@ public class CsvConverter implements MigrationConverter {
     }
 
     public static class CsvConverterException extends RawdataConverterException {
-        public CsvConverterException(String msg) {
-            super(msg);
-        }
-
         public CsvConverterException(String message, Throwable cause) {
             super(message, cause);
         }
