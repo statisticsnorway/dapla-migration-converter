@@ -18,10 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -89,18 +85,6 @@ public class CsvConverter implements MigrationConverter {
             } else if ("Float".equals(columnType)) {
                 fields.optionalFloat(avroColumnName);
                 csvToAvroMapping[i] = Float::parseFloat;
-            } else if ("ZonedDateTime".equals(columnType)) {
-                fields.optionalString(avroColumnName);
-                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
-                csvToAvroMapping[i] = str -> ZonedDateTime.parse(str, pattern);
-            } else if ("LocalTime".equals(columnType)) {
-                fields.optionalString(avroColumnName);
-                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
-                csvToAvroMapping[i] = str -> LocalTime.parse(str, pattern);
-            } else if ("LocalDate".equals(columnType)) {
-                fields.optionalString(avroColumnName);
-                DateTimeFormatter pattern = DateTimeFormatter.ofPattern(column.format());
-                csvToAvroMapping[i] = str -> LocalDate.parse(str, pattern);
             } else {
                 throw new RuntimeException("Type not supported: " + columnType);
             }
