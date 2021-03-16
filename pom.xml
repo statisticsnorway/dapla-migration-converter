@@ -34,6 +34,11 @@
             <groupId>no.ssb.avro.convert.csv</groupId>
             <artifactId>avro-buddy-csv</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.micronaut.gcp</groupId>
+            <artifactId>micronaut-gcp-pubsub</artifactId>
+            <version>3.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>

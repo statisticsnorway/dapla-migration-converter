@@ -1,0 +1,10 @@
+micronaut:
+  application:
+    name: dapla-migration-converter
+  config-client:
+    enabled: true
+gcp:
+  project-id: dapla
+#  credentials:
+#    scopes: https://www.googleapis.com/auth/pubsub
+#    location: localenv/private/gcp/sa-keys/dev-sirius-37ed83f3c726.json

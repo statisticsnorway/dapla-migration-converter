@@ -8,6 +8,7 @@
 /private
 /src/test/resources/rawdata/private
 *-private.yml
+/localenv/
 
 ######################
 # Node
