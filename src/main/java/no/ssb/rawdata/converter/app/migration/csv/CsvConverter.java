@@ -87,7 +87,7 @@ public class CsvConverter implements MigrationConverter {
                 .withValueInterceptor(valueInterceptorChain::intercept)) {
 
             List<GenericRecord> dataItems = new ArrayList<>();
-            records.forEach(dataItems::add);
+            records.forEach(dataItems::add); // CsvToRecords converts csv to avro internally while iterating
 
             return dataItems.get(0);
         } catch (IOException e) {

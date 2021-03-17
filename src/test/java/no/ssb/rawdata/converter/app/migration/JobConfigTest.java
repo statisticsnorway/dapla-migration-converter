@@ -1,30 +1,20 @@
 package no.ssb.rawdata.converter.app.migration;
 
-import io.micronaut.runtime.EmbeddedApplication;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import no.ssb.rawdata.converter.app.migration.pubsub.PubSubJobRequestClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.ssb.rawdata.converter.core.datasetmeta.DatasetType;
 import no.ssb.rawdata.converter.core.datasetmeta.Valuation;
 import no.ssb.rawdata.converter.core.job.ConverterJobConfig;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 
-@MicronautTest
-public class RawdataConverterAppTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @Inject
-    EmbeddedApplication application;
-
-    @Inject
-    PubSubJobRequestClient pubSubJobRequestClient;
+public class JobConfigTest {
 
     @Test
-    void testItWorks() throws InterruptedException {
-        Assertions.assertTrue(application.isRunning());
-
+    public void jobToJson() throws JsonProcessingException {
         ConverterJobConfig jobConfig = new ConverterJobConfig("test-job")
                 .setPrototype(false)
                 .setParent("base")
@@ -54,11 +44,15 @@ public class RawdataConverterAppTest {
                 .setPath("/kilde/stamme01/foo/bar/dataset-navn")
                 .setVersion("" + System.currentTimeMillis());
 
-        pubSubJobRequestClient.send(jobConfig);
+        ObjectMapper mapper = new ObjectMapper();
+        String jobJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jobConfig);
+        System.out.printf("%s%n", jobJson);
 
-        System.out.printf("SENT JOB WITH ID: %s%n", jobConfig.getJobId());
+        ConverterJobConfig copiedJob = mapper.readValue(jobJson, ConverterJobConfig.class);
+        String copiedJobJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(copiedJob);
+        System.out.printf("%s%n", copiedJobJson);
 
-        Thread.sleep(1000);
+        assertEquals(jobJson, copiedJobJson);
+        assertEquals(jobConfig, copiedJob);
     }
-
 }
