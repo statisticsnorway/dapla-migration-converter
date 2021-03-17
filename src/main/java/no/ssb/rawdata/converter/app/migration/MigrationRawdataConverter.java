@@ -82,12 +82,12 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             URI uri = structure.uri();
             byte[] schemaBytes = switch (uri.getScheme()) {
                 case "inline" -> structure.schemaAsBytes();
-                case "metadata" -> metadataClient.get(uri.getPath());
+                case "metadata" -> metadataClient.get(uri.getSchemeSpecificPart());
                 default -> throw new RuntimeException("structure.uri scheme not supported while locating schema: " + uri.getScheme());
             };
             String converterType = switch (uri.getScheme()) {
                 case "inline" -> uri.getSchemeSpecificPart();
-                case "metadata" -> uri.getPath().substring(uri.getPath().lastIndexOf(".") + 1);
+                case "metadata" -> uri.getSchemeSpecificPart().substring(uri.getSchemeSpecificPart().lastIndexOf(".") + 1);
                 default -> throw new RuntimeException("structure.uri scheme not supported while determining converterType: " + uri.getScheme());
             };
             MigrationConverter converter = switch (converterType) {
