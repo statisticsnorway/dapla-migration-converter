@@ -33,9 +33,7 @@ public class MigrationRawdataConverterTest {
                 createTestData(rawdataClient);
             }
 
-            MigrationRawdataConverterConfig config = new MigrationRawdataConverterConfig();
-
-            MigrationRawdataConverter converter = new MigrationRawdataConverter(config, new ValueInterceptorChain());
+            MigrationRawdataConverter converter = new MigrationRawdataConverter(new ValueInterceptorChain());
 
             converter.initialize(rawdataClient.metadata("sometopic"));
             try (RawdataConsumer consumer = rawdataClient.consumer("sometopic")) {

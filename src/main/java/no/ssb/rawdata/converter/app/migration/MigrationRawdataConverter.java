@@ -28,7 +28,6 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     private static final String FIELDNAME_MANIFEST = "manifest";
     private static final String FIELDNAME_COLLECTOR = "collector";
 
-    private final MigrationRawdataConverterConfig converterConfig;
     private final ValueInterceptorChain valueInterceptorChain;
 
     private Schema manifestSchema;
@@ -37,8 +36,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
 
     private final Map<String, MigrationConverter> delegateByDocumentId = new LinkedHashMap<>();
 
-    public MigrationRawdataConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain) {
-        this.converterConfig = converterConfig;
+    public MigrationRawdataConverter(ValueInterceptorChain valueInterceptorChain) {
         this.valueInterceptorChain = valueInterceptorChain;
     }
 
@@ -91,7 +89,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
                 default -> throw new RuntimeException("structure.uri scheme not supported while determining converterType: " + uri.getScheme());
             };
             MigrationConverter converter = switch (converterType) {
-                case "csv" -> new CsvConverter(converterConfig, valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
+                case "csv" -> new CsvConverter(valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
                 default -> throw new IllegalArgumentException("converterType not supported: " + converterType);
             };
             delegateByDocumentId.put(documentId, converter);
