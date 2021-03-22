@@ -1,0 +1,42 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="rawdata-converter-app-migration-local" type="MicronautRunConfigurationType" factoryName="Micronaut">
+    <module name="dapla-migration-converter-local-gcp" />
+    <option name="alternativeJrePath" />
+    <option name="alternativeJrePathEnabled" value="false" />
+    <option name="includeProvidedScope" value="true" />
+    <option name="mainClass" value="no.ssb.rawdata.converter.app.migration.Application" />
+    <option name="passParentEnvs" value="true" />
+    <option name="programParameters" value="" />
+    <option name="shortenCommandLine" />
+    <option name="vmParameters" value="-Dmicronaut.bootstrap.context=true" />
+    <option name="workingDirectory" value="$MODULE_DIR$" />
+    <envs>
+      <env name="MICRONAUT_ENVIRONMENTS" value="local,local-gcp" />
+      <env name="PUBSUB_EMULATOR_HOST" value="localhost" />
+      <env name="MICRONAUT_CONFIG_FILES" value="conf/bootstrap-local-gcp.yml,conf/application-local.yml" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+  <configuration default="false" name="dapla-migration-converter-local-gcp" type="MicronautRunConfigurationType" factoryName="Micronaut">
+    <module name="dapla-migration-converter" />
+    <option name="alternativeJrePath" />
+    <option name="alternativeJrePathEnabled" value="false" />
+    <option name="includeProvidedScope" value="true" />
+    <option name="mainClass" value="no.ssb.rawdata.converter.app.migration.Application" />
+    <option name="passParentEnvs" value="true" />
+    <option name="programParameters" value="" />
+    <option name="shortenCommandLine" />
+    <option name="vmParameters" value="-Dmicronaut.bootstrap.context=true" />
+    <option name="workingDirectory" value="$MODULE_DIR$" />
+    <envs>
+      <env name="MICRONAUT_ENVIRONMENTS" value="local,local-gcp" />
+      <env name="MICRONAUT_CONFIG_FILES" value="conf/bootstrap-local-gcp.yml,conf/application-local.yml" />
+      <env name="PUBSUB_EMULATOR_HOST" value="localhost:8538" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

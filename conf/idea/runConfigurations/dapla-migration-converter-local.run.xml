@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="rawdata-converter-app-migration-local" type="MicronautRunConfigurationType" factoryName="Micronaut">
-    <module name="rawdata-converter-app-migration" />
+  <configuration default="false" name="dapla-migration-converter-local" type="MicronautRunConfigurationType" factoryName="Micronaut">
+    <module name="dapla-migration-converter" />
     <option name="alternativeJrePath" />
     <option name="alternativeJrePathEnabled" value="false" />
     <option name="includeProvidedScope" value="true" />

@@ -7,7 +7,6 @@ import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.api.RawdataMetadataClient;
 import no.ssb.rawdata.converter.app.migration.AvroUtils;
 import no.ssb.rawdata.converter.app.migration.MigrationConverter;
-import no.ssb.rawdata.converter.app.migration.MigrationRawdataConverterConfig;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.exception.RawdataConverterException;
 import org.apache.avro.Schema;
@@ -24,15 +23,13 @@ import static no.ssb.rawdata.converter.util.RawdataMessageAdapter.posAndIdOf;
 
 public class CsvConverter implements MigrationConverter {
 
-    final MigrationRawdataConverterConfig converterConfig;
     final ValueInterceptorChain valueInterceptorChain;
     final String documentId;
     final CsvSchema csvSchema;
     Schema avroSchema;
     CsvParserSettings csvParserSettings;
 
-    public CsvConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain, String documentId, CsvSchema csvSchema) {
-        this.converterConfig = converterConfig;
+    public CsvConverter(ValueInterceptorChain valueInterceptorChain, String documentId, CsvSchema csvSchema) {
         this.valueInterceptorChain = valueInterceptorChain;
         this.documentId = documentId;
         this.csvSchema = csvSchema;
@@ -87,7 +84,7 @@ public class CsvConverter implements MigrationConverter {
                 .withValueInterceptor(valueInterceptorChain::intercept)) {
 
             List<GenericRecord> dataItems = new ArrayList<>();
-            records.forEach(dataItems::add);
+            records.forEach(dataItems::add); // CsvToRecords converts csv to avro internally while iterating
 
             return dataItems.get(0);
         } catch (IOException e) {

@@ -29,7 +29,6 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     private static final String FIELDNAME_MANIFEST = "manifest";
     private static final String FIELDNAME_COLLECTOR = "collector";
 
-    private final MigrationRawdataConverterConfig converterConfig;
     private final ValueInterceptorChain valueInterceptorChain;
 
     private Schema manifestSchema;
@@ -38,8 +37,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
 
     private final Map<String, MigrationConverter> delegateByDocumentId = new LinkedHashMap<>();
 
-    public MigrationRawdataConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain) {
-        this.converterConfig = converterConfig;
+    public MigrationRawdataConverter(ValueInterceptorChain valueInterceptorChain) {
         this.valueInterceptorChain = valueInterceptorChain;
     }
 
@@ -83,16 +81,16 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             URI uri = structure.uri();
             byte[] schemaBytes = switch (uri.getScheme()) {
                 case "inline" -> structure.schemaAsBytes();
-                case "metadata" -> metadataClient.get(uri.getPath());
+                case "metadata" -> metadataClient.get(uri.getSchemeSpecificPart());
                 default -> throw new RuntimeException("structure.uri scheme not supported while locating schema: " + uri.getScheme());
             };
             String converterType = switch (uri.getScheme()) {
                 case "inline" -> uri.getSchemeSpecificPart();
-                case "metadata" -> uri.getPath().substring(uri.getPath().lastIndexOf(".") + 1);
+                case "metadata" -> uri.getSchemeSpecificPart().substring(uri.getSchemeSpecificPart().lastIndexOf(".") + 1);
                 default -> throw new RuntimeException("structure.uri scheme not supported while determining converterType: " + uri.getScheme());
             };
             MigrationConverter converter = switch (converterType) {
-                case "csv" -> new CsvConverter(converterConfig, valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
+                case "csv" -> new CsvConverter(valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
                 case "oracle" -> new JsonOracleConverter(converterConfig, valueInterceptorChain, documentId, schemaBytes);
                 default -> throw new IllegalArgumentException("converterType not supported: " + converterType);
             };
