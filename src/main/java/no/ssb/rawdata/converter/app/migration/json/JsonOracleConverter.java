@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.api.RawdataMetadataClient;
 import no.ssb.rawdata.converter.app.migration.MigrationConverter;
-import no.ssb.rawdata.converter.app.migration.MigrationRawdataConverterConfig;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.exception.RawdataConverterException;
 import org.apache.avro.Schema;
@@ -28,15 +27,13 @@ public class JsonOracleConverter implements MigrationConverter {
 
     static final ObjectMapper mapper = new ObjectMapper();
 
-    final MigrationRawdataConverterConfig converterConfig;
     final ValueInterceptorChain valueInterceptorChain;
     final String documentId;
     final byte[] schemaBytes;
     String[] columnNames;
     Schema avroSchema;
 
-    public JsonOracleConverter(MigrationRawdataConverterConfig converterConfig, ValueInterceptorChain valueInterceptorChain, String documentId, byte[] schemaBytes) {
-        this.converterConfig = converterConfig;
+    public JsonOracleConverter(ValueInterceptorChain valueInterceptorChain, String documentId, byte[] schemaBytes) {
         this.valueInterceptorChain = valueInterceptorChain;
         this.documentId = documentId;
         this.schemaBytes = schemaBytes;

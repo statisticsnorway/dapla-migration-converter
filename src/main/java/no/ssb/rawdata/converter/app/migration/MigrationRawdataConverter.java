@@ -91,7 +91,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             };
             MigrationConverter converter = switch (converterType) {
                 case "csv" -> new CsvConverter(valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
-                case "oracle" -> new JsonOracleConverter(converterConfig, valueInterceptorChain, documentId, schemaBytes);
+                case "oracle" -> new JsonOracleConverter(valueInterceptorChain, documentId, schemaBytes);
                 default -> throw new IllegalArgumentException("converterType not supported: " + converterType);
             };
             delegateByDocumentId.put(documentId, converter);
