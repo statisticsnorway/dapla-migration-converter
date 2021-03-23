@@ -6,6 +6,7 @@ import no.ssb.dapla.ingest.rawdata.metadata.RawdataStructure;
 import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.api.RawdataMetadataClient;
 import no.ssb.rawdata.converter.app.migration.csv.CsvConverter;
+import no.ssb.rawdata.converter.app.migration.json.JsonKostraConverter;
 import no.ssb.rawdata.converter.app.migration.json.JsonOracleConverter;
 import no.ssb.rawdata.converter.core.convert.ConversionResult;
 import no.ssb.rawdata.converter.core.convert.ConversionResult.ConversionResultBuilder;
@@ -91,6 +92,7 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             };
             MigrationConverter converter = switch (converterType) {
                 case "csv" -> new CsvConverter(valueInterceptorChain, documentId, new CsvSchema(schemaBytes));
+                case "kostra" -> new JsonKostraConverter(valueInterceptorChain, documentId, schemaBytes);
                 case "oracle" -> new JsonOracleConverter(valueInterceptorChain, documentId, schemaBytes);
                 default -> throw new IllegalArgumentException("converterType not supported: " + converterType);
             };
