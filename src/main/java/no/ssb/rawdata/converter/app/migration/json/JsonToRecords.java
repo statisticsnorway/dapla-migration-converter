@@ -11,9 +11,11 @@ import no.ssb.avro.convert.core.ValueInterceptor;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
@@ -29,7 +31,7 @@ public class JsonToRecords implements AutoCloseable, Iterable<GenericRecord> {
 
     public JsonToRecords(InputStream inputStream, String[] columnNames, Schema schema) throws IOException {
         this.columnNames = columnNames;
-        final InputStreamReader source = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        final Reader source = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         source.mark(1);
         char[] firstChar = new char[1];
         if (source.read(firstChar, 0, 1) == -1) {
