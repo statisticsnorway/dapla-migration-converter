@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
 
 import static java.util.Optional.ofNullable;
 
@@ -41,20 +40,6 @@ public class JsonKostraConverter implements MigrationConverter {
         this.valueInterceptorChain = valueInterceptorChain;
         this.documentId = documentId;
         this.schemaBytes = schemaBytes;
-    }
-
-    static class ColumnMapper {
-        final String name;
-        final Function<JsonNode, Object> jsonToAvroConverter;
-        final Function<String, JsonNode> stringToJsonConverter;
-        final FieldDescriptor fieldDescriptor;
-
-        ColumnMapper(String name, Function<JsonNode, Object> jsonToAvroConverter, Function<String, JsonNode> stringToJsonConverter, FieldDescriptor fieldDescriptor) {
-            this.name = name;
-            this.jsonToAvroConverter = jsonToAvroConverter;
-            this.stringToJsonConverter = stringToJsonConverter;
-            this.fieldDescriptor = fieldDescriptor;
-        }
     }
 
     @Override

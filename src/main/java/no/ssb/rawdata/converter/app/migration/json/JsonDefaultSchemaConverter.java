@@ -3,25 +3,27 @@ package no.ssb.rawdata.converter.app.migration.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BinaryNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.TextNode;
+import no.ssb.avro.convert.core.FieldDescriptor;
 import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.api.RawdataMetadataClient;
 import no.ssb.rawdata.converter.app.migration.MigrationConverter;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
-import no.ssb.rawdata.converter.core.exception.RawdataConverterException;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.Optional.ofNullable;
-import static no.ssb.rawdata.converter.util.RawdataMessageAdapter.posAndIdOf;
 
 public class JsonDefaultSchemaConverter implements MigrationConverter {
 
@@ -30,8 +32,8 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
     final ValueInterceptorChain valueInterceptorChain;
     final String documentId;
     final byte[] schemaBytes;
-    String[] columnNames;
     Schema avroSchema;
+    ColumnMapper[] columnMappers;
 
     public JsonDefaultSchemaConverter(ValueInterceptorChain valueInterceptorChain, String documentId, byte[] schemaBytes) {
         this.valueInterceptorChain = valueInterceptorChain;
@@ -50,26 +52,46 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
             throw new RuntimeException(e);
         }
 
-        List<String> columns = new ArrayList<>();
+        columnMappers = new ColumnMapper[arrayNode.size()];
+
+        int i = 0;
         for (JsonNode node : arrayNode) {
             String name = ofNullable(node.get("name")).map(JsonNode::textValue).orElseThrow();
             String type = ofNullable(node.get("type")).map(JsonNode::textValue).orElseThrow();
 
-            columns.add(name);
-
-            // https://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm
-
             switch (JsonNodeType.valueOf(type)) {
-                case STRING -> fields.optionalString(name);
-                case NUMBER -> fields.optionalDouble(name);
-                case BOOLEAN -> fields.optionalBoolean(name);
-                case BINARY -> fields.optionalBytes(name);
-                case OBJECT, ARRAY, POJO, MISSING, NULL -> throw new UnsupportedOperationException();
+                case STRING -> {
+                    fields.optionalString(name);
+                    columnMappers[i] = new ColumnMapper(name, JsonNode::textValue, TextNode::valueOf, new FieldDescriptor(name));
+                    break;
+                }
+                case BOOLEAN -> {
+                    fields.optionalBoolean(name);
+                    columnMappers[i] = new ColumnMapper(name, JsonNode::booleanValue, str -> BooleanNode.valueOf(Boolean.parseBoolean(str)), new FieldDescriptor(name));
+                    break;
+                }
+                case NUMBER -> {
+                    fields.optionalDouble(name);
+                    columnMappers[i] = new ColumnMapper(name, JsonNode::doubleValue, str -> DoubleNode.valueOf(Double.parseDouble(str)), new FieldDescriptor(name));
+                    break;
+                }
+                case BINARY -> {
+                    fields.optionalBytes(name);
+                    columnMappers[i] = new ColumnMapper(name, jsonNode -> {
+                        try {
+                            return jsonNode.binaryValue();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    }, s -> BinaryNode.valueOf(s.getBytes(StandardCharsets.UTF_8)), new FieldDescriptor(name));
+                    break;
+                }
+                case OBJECT, ARRAY, POJO, MISSING, NULL -> {
+                    throw new UnsupportedOperationException();
+                }
             }
         }
         avroSchema = fields.endRecord();
-
-        columnNames = columns.toArray(String[]::new);
 
         return avroSchema;
     }
@@ -83,22 +105,32 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
     public GenericRecord convert(RawdataMessage rawdataMessage) {
         byte[] data = rawdataMessage.get(documentId);
 
-        try (JsonToRecords records = new JsonToRecords(new ByteArrayInputStream(data), columnNames, avroSchema)
-                .withValueInterceptor(valueInterceptorChain::intercept)) {
-
-            List<GenericRecord> dataItems = new ArrayList<>();
-            records.forEach(dataItems::add);
-
-            return dataItems.get(0);
+        ArrayNode arrayNode;
+        try {
+            arrayNode = (ArrayNode) mapper.readTree(data);
         } catch (IOException e) {
-            throw new JsonConverterException("Error converting CSV data at " + posAndIdOf(rawdataMessage), e);
+            throw new UncheckedIOException(e);
         }
+
+        GenericRecordBuilder recordBuilder = new GenericRecordBuilder(avroSchema);
+
+        for (int i = 0; i < columnMappers.length; i++) {
+            ColumnMapper columnMapper = columnMappers[i];
+            ofNullable(arrayNode.get(i))
+                    .map(jsonNode -> valueInterceptorChain.intercept(columnMapper.fieldDescriptor, asText(jsonNode)))
+                    .map(columnMapper.stringToJsonConverter)
+                    .map(columnMapper.jsonToAvroConverter)
+                    .ifPresent(value -> recordBuilder.set(columnMapper.name, value));
+        }
+
+        return recordBuilder.build();
     }
 
-    public static class JsonConverterException extends RawdataConverterException {
-        public JsonConverterException(String message, Throwable cause) {
-            super(message, cause);
+    static String asText(JsonNode node) {
+        if (node.isNull()) {
+            return null;
         }
+        return node.asText();
     }
 
 }
