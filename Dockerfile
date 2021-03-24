@@ -24,6 +24,7 @@ COPY target/classes/logback.xml /app/conf/
 COPY target/classes/logback-prod-bip.xml /app/conf/
 COPY conf/application-dc.yml /app/conf/application-dc.yml
 COPY conf/bootstrap-dc.yml /app/conf/bootstrap-dc.yml
+COPY conf/dummy.json /app/conf/private/dummy.json
 
 ENV PATH=/jdk/bin:$PATH
 
