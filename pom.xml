@@ -44,6 +44,11 @@
             <artifactId>micronaut-gcp-pubsub</artifactId>
             <version>3.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-pubsub</artifactId>
+            <version>1.112.0</version>
+        </dependency>
     </dependencies>
 
     <build>
