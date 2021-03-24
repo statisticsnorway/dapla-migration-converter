@@ -9,10 +9,12 @@ import no.ssb.rawdata.converter.app.migration.csv.CsvConverter;
 import no.ssb.rawdata.converter.app.migration.json.JsonDefaultSchemaConverter;
 import no.ssb.rawdata.converter.app.migration.json.JsonKostraConverter;
 import no.ssb.rawdata.converter.app.migration.json.JsonOracleConverter;
+import no.ssb.rawdata.converter.app.migration.pubsub.PubSubResponseService;
 import no.ssb.rawdata.converter.core.convert.ConversionResult;
 import no.ssb.rawdata.converter.core.convert.ConversionResult.ConversionResultBuilder;
 import no.ssb.rawdata.converter.core.convert.RawdataConverterV2;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
+import no.ssb.rawdata.converter.core.job.ConverterJobConfig;
 import no.ssb.rawdata.converter.core.schema.AggregateSchemaBuilder;
 import no.ssb.rawdata.converter.metrics.MetricName;
 import org.apache.avro.Schema;
@@ -21,6 +23,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -32,15 +35,24 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     private static final String FIELDNAME_COLLECTOR = "collector";
 
     private final ValueInterceptorChain valueInterceptorChain;
+    private final PubSubResponseService pubSubResponseService;
+    private final ConverterJobConfig jobConfig;
+
+    private final ZonedDateTime startTime;
 
     private Schema manifestSchema;
     private Schema targetAvroSchema;
     private Schema collectorManifestSchema;
 
+    private long messagesConverted;
+
     private final Map<String, MigrationConverter> delegateByDocumentId = new LinkedHashMap<>();
 
-    public MigrationRawdataConverter(ValueInterceptorChain valueInterceptorChain) {
+    public MigrationRawdataConverter(ValueInterceptorChain valueInterceptorChain, PubSubResponseService pubSubResponseService, ConverterJobConfig jobConfig) {
         this.valueInterceptorChain = valueInterceptorChain;
+        this.pubSubResponseService = pubSubResponseService;
+        this.jobConfig = jobConfig;
+        this.startTime = ZonedDateTime.now();
     }
 
     @Override
@@ -109,6 +121,22 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
     }
 
     @Override
+    public void onError(Throwable t) {
+        log.error("MIGRATION onError()", t);
+        if (pubSubResponseService != null) {
+            pubSubResponseService.sendError(jobConfig, startTime, messagesConverted, t);
+        }
+    }
+
+    @Override
+    public void onComplete() {
+        log.info("MIGRATION onComplete()");
+        if (pubSubResponseService != null) {
+            pubSubResponseService.sendComplete(jobConfig, startTime, messagesConverted);
+        }
+    }
+
+    @Override
     public Schema targetAvroSchema() {
         if (targetAvroSchema == null) {
             throw new IllegalStateException("targetAvroSchema is null. Make sure RawdataConverter#init() was invoked in advance.");
@@ -145,6 +173,13 @@ public class MigrationRawdataConverter implements RawdataConverterV2 {
             }
         }
         resultBuilder.appendCounter(MetricName.RAWDATA_RECORDS_TOTAL, 1);
+
+        messagesConverted++;
+        if (messagesConverted % 10000 == 0) {
+            if (pubSubResponseService != null) {
+                pubSubResponseService.sendInProgress(jobConfig, startTime, messagesConverted);
+            }
+        }
 
         return resultBuilder.build();
     }
