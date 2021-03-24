@@ -1,0 +1,78 @@
+micronaut:
+  server:
+    port: 10320
+
+gcp:
+  project-id: dapla
+  credentials:
+#    scopes: https://www.googleapis.com/auth/pubsub
+    location: localenv/private/gcp/sa-keys/dev-sirius-37ed83f3c726.json
+  pubsub:
+    publisher:
+      migration-converter-job-responses:
+        topic: "migration-converter-job-responses"
+    subscriber:
+      migration-converter-job-requests:
+        topic: "migration-converter-job-requests"
+        subscription: "migration-converter-job-requests"
+
+logger.levels:
+  no.ssb.rawdata.converter: DEBUG
+
+endpoints:
+  all:
+    sensitive: false
+  prometheus:
+    sensitive: false
+
+services:
+  dapla-oauth:
+    token-provider: mock
+  dapla-data-access:
+    impl: MOCK
+  dapla-metadata-distributor:
+    impl: MOCK
+  secrets:
+    impl: PROPFILE
+    file: /secret-manager-data/secrets.properties
+    overrides:
+
+pseudo.secrets:
+  somesecret:
+    content: testsecretcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
+    type: AES256
+
+rawdata.sources:
+  somerawdata:
+    rawdata-client:
+      provider: filesystem
+      local-temp-folder: /data/rawdata/temp
+      avro-file:
+        max.seconds: 3600
+        max.bytes: 10485760
+        sync.interval: 500000
+      filesystem:
+        storage-folder: /rawdata/storage
+      listing:
+        min-interval-seconds: 0
+
+rawdata.converter:
+  job-scheduler:
+    max-concurrent-jobs: 10
+  jobs:
+    base:
+      prototype: true
+      debug:
+        dryrun: false
+        development-mode: true
+        log-failed-rawdata: false
+        store-failed-rawdata: true
+        local-storage-path: /data/rawdata/debug
+      converter-settings:
+        max-records-before-flush: 10000
+        max-seconds-before-flush: 10
+      rawdata-source:
+        name: local
+      target-storage:
+        type: filesystem
+        root: file:///data/datastore

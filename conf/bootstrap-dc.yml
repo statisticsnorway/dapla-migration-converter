@@ -1,0 +1,5 @@
+micronaut:
+  application:
+    name: dapla-migration-converter
+  config-client:
+    enabled: true
