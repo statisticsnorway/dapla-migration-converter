@@ -11,7 +11,7 @@ RUN ["jlink", "--strip-java-debug-attributes", "--no-header-files", "--no-man-pa
 #
 FROM alpine:latest
 
-RUN apk --no-cache add curl tar gzip nano jq
+RUN apk --no-cache add curl tar gzip nano jq libc6-compat gcompat
 
 #
 # Resources from build image
