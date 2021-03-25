@@ -45,7 +45,7 @@ pseudo.secrets:
     type: AES256
 
 rawdata.sources:
-  somerawdata:
+  dc:
     rawdata-client:
       provider: filesystem
       local-temp-folder: /data/rawdata/temp
@@ -74,7 +74,7 @@ rawdata.converter:
         max-records-before-flush: 10000
         max-seconds-before-flush: 10
       rawdata-source:
-        name: local
+        name: dc
       target-storage:
         type: filesystem
         root: file:///data/datastore
