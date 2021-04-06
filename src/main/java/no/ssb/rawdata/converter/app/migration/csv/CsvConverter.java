@@ -5,7 +5,6 @@ import no.ssb.avro.convert.csv.CsvToRecords;
 import no.ssb.dapla.ingest.rawdata.metadata.CsvSchema;
 import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.api.RawdataMetadataClient;
-import no.ssb.rawdata.converter.app.migration.AvroUtils;
 import no.ssb.rawdata.converter.app.migration.MigrationConverter;
 import no.ssb.rawdata.converter.core.convert.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.exception.RawdataConverterException;
@@ -41,7 +40,6 @@ public class CsvConverter implements MigrationConverter {
         List<CsvSchema.Column> columns = csvSchema.columns();
         String[] avroHeader = columns.stream()
                 .map(CsvSchema.Column::name)
-                .map(AvroUtils::formatToken)
                 .toArray(String[]::new);
         for (int i = 0; i < columns.size(); i++) {
             CsvSchema.Column column = columns.get(i);
@@ -70,7 +68,6 @@ public class CsvConverter implements MigrationConverter {
                 .columnHeadersPresent(false)
                 .headers(csvSchema.columns().stream()
                         .map(CsvSchema.Column::name)
-                        .map(AvroUtils::formatToken)
                         .collect(Collectors.toList()));
 
         return avroSchema;
