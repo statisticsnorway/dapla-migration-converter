@@ -5,8 +5,7 @@
     <parent>
         <groupId>no.ssb.rawdata.converter.app</groupId>
         <artifactId>rawdata-converter-app-parent</artifactId>
-        <version>0.10.7-SNAPSHOT</version>
-        <relativePath>../rawdata-converter/rawdata-converter-app-parent</relativePath>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>dapla-migration-converter</artifactId>
