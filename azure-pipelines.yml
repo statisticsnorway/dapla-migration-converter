@@ -37,6 +37,8 @@ variables:
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTS
     value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  - name: MICRONAUT_ENVIRONMENTS
+    value: 'azure'
 
 jobs:
   - template: complete-builds/job-test-integration-coverage-build-gcr.yml@templates

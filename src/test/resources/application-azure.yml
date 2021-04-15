@@ -1,0 +1,25 @@
+pubsub.emulator.host: pubsub:8538
+
+micronaut:
+  application.name: rawdata-converter-app-migration
+  server:
+    port: 18080
+
+services:
+  dapla-oauth:
+    token-provider: mock
+  dapla-data-access:
+    impl: MOCK
+  dapla-metadata-distributor:
+    impl: MOCK
+
+gcp:
+  project-id: dapla
+  pubsub:
+    publisher:
+      migration-converter-job-responses:
+        topic: "migration-converter-job-responses"
+    subscriber:
+      migration-converter-job-requests:
+        topic: "migration-converter-job-requests"
+        subscription: "migration-converter-job-requests"
