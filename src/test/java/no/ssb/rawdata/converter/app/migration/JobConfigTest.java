@@ -104,7 +104,7 @@ public class JobConfigTest {
                     "encryptionKey" : null,
                     "encryptionKeyId" : "my-secret-key",
                     "encryptionKeyVersion" : "1",
-                    "encryptionSalt" : "encryption-salt"
+                    "encryptionSalt" : "ZW5jcnlwdGlvbi1zYWx0"
                   },
                   "targetStorage" : {
                     "root" : null,
@@ -119,7 +119,7 @@ public class JobConfigTest {
                   },
                   "appConfig" : { },
                   "pseudoRules" : [ ]
-                } """;
+                }""";
         ConverterJobConfig converterJobConfig = Json.toObject(ConverterJobConfigDeserializeWorkaround.class, json);
         converterJobConfig.toString();
     }
