@@ -1,5 +1,3 @@
-pubsub.emulator.host: localhost:8538
-
 micronaut:
   application.name: rawdata-converter-app-migration
   server:

@@ -195,6 +195,7 @@
                                 ${argLine}
                                 --illegal-access=deny
                                 -Xmx1500m
+                                -Dmicronaut.environments=local
                             </argLine>
                         </configuration>
                     </plugin>
