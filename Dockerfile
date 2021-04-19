@@ -1,22 +1,26 @@
-FROM eu.gcr.io/prod-bip/alpine-jdk15-buildtools:master-7744b1c6a23129ceaace641d6d76d0a742440b58 as build
+#FROM eu.gcr.io/prod-bip/alpine-jdk15-buildtools:master-7744b1c6a23129ceaace641d6d76d0a742440b58 as build
 
 #
 # Build stripped JVM
 #
-RUN ["jlink", "--strip-java-debug-attributes", "--no-header-files", "--no-man-pages", "--compress=2", "--module-path", "/jdk/jmods", "--output", "/linked",\
- "--add-modules", "java.base,java.management,jdk.management.agent,jdk.unsupported,java.sql,jdk.zipfs,jdk.naming.dns,java.desktop,java.net.http,jdk.crypto.cryptoki,jdk.jcmd,jdk.jartool,jdk.jdi,jdk.jfr"]
+#RUN ["jlink", "--strip-java-debug-attributes", "--no-header-files", "--no-man-pages", "--compress=2", "--module-path", "/jdk/jmods", "--output", "/linked",\
+# "--add-modules", "java.base,java.management,jdk.management.agent,jdk.unsupported,java.sql,jdk.zipfs,jdk.naming.dns,java.desktop,java.net.http,jdk.crypto.cryptoki,jdk.jcmd,jdk.jartool,jdk.jdi,jdk.jfr"]
 
 #
 # Build Application image
 #
-FROM alpine:latest
+FROM adoptopenjdk/openjdk15
 
-RUN apk --no-cache add curl tar gzip nano jq libc6-compat gcompat
+#RUN apk --no-cache add curl tar gzip nano jq libc6-compat gcompat
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install curl tar gzip nano jq && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists
 
 #
 # Resources from build image
 #
-COPY --from=build /opt/jdk /jdk/
+#COPY --from=build /opt/jdk /jdk/
 #COPY --from=build /opt/jdk/bin/jar /opt/jdk/bin/jcmd /opt/jdk/bin/jdb /opt/jdk/bin/jfr /opt/jdk/bin/jinfo /opt/jdk/bin/jmap /opt/jdk/bin/jps /opt/jdk/bin/jstack /opt/jdk/bin/jstat /jdk/bin/
 COPY target/libs /app/lib/
 COPY target/dapla-migration-converter-*.jar /app/lib/
