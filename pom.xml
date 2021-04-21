@@ -55,7 +55,7 @@
         <dependency>
             <groupId>no.ssb.rawdata</groupId>
             <artifactId>rawdata-client-provider-gcs</artifactId>
-            <version>0.14</version>
+            <version>0.15</version>
         </dependency>
     </dependencies>
 
