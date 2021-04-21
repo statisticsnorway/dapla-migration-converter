@@ -52,6 +52,11 @@
             <artifactId>google-cloud-pubsub</artifactId>
             <version>1.112.0</version>
         </dependency>
+        <dependency>
+            <groupId>no.ssb.rawdata</groupId>
+            <artifactId>rawdata-client-provider-gcs</artifactId>
+            <version>0.14</version>
+        </dependency>
     </dependencies>
 
     <build>
