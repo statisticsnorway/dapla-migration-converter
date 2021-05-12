@@ -1,8 +1,5 @@
 package no.ssb.rawdata.converter.app.migration.csv;
 
-import com.univocity.parsers.common.ParsingContext;
-import com.univocity.parsers.common.ResultIterator;
-import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.avro.convert.core.FieldDescriptor;
@@ -19,6 +16,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
 import java.io.ByteArrayInputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +31,7 @@ public class CsvConverter implements MigrationConverter {
     Schema avroSchema;
     CsvParserSettings csvParserSettings;
     CsvColumnMapper[] columnMappers;
+    private CsvParser internalCsvParser;
 
     public CsvConverter(ValueInterceptorChain valueInterceptorChain, String documentId, CsvSchema csvSchema) {
         this.valueInterceptorChain = valueInterceptorChain;
@@ -83,6 +82,8 @@ public class CsvConverter implements MigrationConverter {
                         .map(CsvSchema.Column::name)
                         .collect(Collectors.toList()));
 
+        internalCsvParser = new CsvParser(csvParserSettings.getInternal());
+
         return avroSchema;
     }
 
@@ -92,16 +93,12 @@ public class CsvConverter implements MigrationConverter {
         GenericRecordBuilder recordBuilder = new GenericRecordBuilder(avroSchema);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
 
-        // TODO Creating a new CSVParser is an expensive operation
-        com.univocity.parsers.csv.CsvParserSettings settings = csvParserSettings.getInternal();
-        CsvParser internalCsvParser = new CsvParser(settings);
-
-        ResultIterator<Record, ParsingContext> iterator = internalCsvParser.iterateRecords(inputStream).iterator();
+        Iterator<String[]> iterator = internalCsvParser.parseAll(inputStream).iterator();
         if (iterator.hasNext()) {
-            Record record = iterator.next();
+            String[] record = iterator.next();
             for (int i = 0; i < columnMappers.length; i++) {
                 CsvColumnMapper columnMapper = columnMappers[i];
-                ofNullable(record.getString(i))
+                ofNullable(record[i])
                         .map(str -> valueInterceptorChain.intercept(columnMapper.fieldDescriptor, str))
                         .map(columnMapper.stringToAvroConverter)
                         .ifPresent(value -> recordBuilder.set(columnMapper.name, value));
