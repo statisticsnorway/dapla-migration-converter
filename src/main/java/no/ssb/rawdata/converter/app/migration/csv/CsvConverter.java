@@ -33,7 +33,6 @@ public class CsvConverter implements MigrationConverter {
     Schema avroSchema;
     CsvParserSettings csvParserSettings;
     CsvColumnMapper[] columnMappers;
-    CsvParser internalCsvParser;
 
     public CsvConverter(ValueInterceptorChain valueInterceptorChain, String documentId, CsvSchema csvSchema) {
         this.valueInterceptorChain = valueInterceptorChain;
@@ -84,16 +83,20 @@ public class CsvConverter implements MigrationConverter {
                         .map(CsvSchema.Column::name)
                         .collect(Collectors.toList()));
 
-        internalCsvParser = new CsvParser(csvParserSettings.getInternal());
-
         return avroSchema;
     }
 
     @Override
     public GenericRecord convert(RawdataMessage rawdataMessage) {
         byte[] data = rawdataMessage.get(documentId);
+        System.err.println("-----> data: " + new String(data));
         GenericRecordBuilder recordBuilder = new GenericRecordBuilder(avroSchema);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+
+        // TODO Creating a new CSVParser is an expensive operation
+        com.univocity.parsers.csv.CsvParserSettings settings = csvParserSettings.getInternal();
+        CsvParser internalCsvParser = new CsvParser(settings);
+
         ResultIterator<Record, ParsingContext> iterator = internalCsvParser.iterateRecords(inputStream).iterator();
         if (iterator.hasNext()) {
             Record record = iterator.next();
