@@ -89,7 +89,6 @@ public class CsvConverter implements MigrationConverter {
     @Override
     public GenericRecord convert(RawdataMessage rawdataMessage) {
         byte[] data = rawdataMessage.get(documentId);
-        System.err.println("-----> data: " + new String(data));
         GenericRecordBuilder recordBuilder = new GenericRecordBuilder(avroSchema);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
 
