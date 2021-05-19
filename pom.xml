@@ -27,7 +27,7 @@
         <dependency>
             <groupId>no.ssb.dapla.ingest</groupId>
             <artifactId>dapla-rawdata-metadata-api</artifactId>
-            <version>0.2</version>
+            <version>0.5</version>
         </dependency>
         <dependency>
             <groupId>no.ssb.dapla.migration</groupId>
