@@ -75,7 +75,7 @@ public class JsonOracleConverter implements MigrationConverter {
                 fields.optionalLong(name);
                 columnMappers[i] = new ColumnMapper(name, JsonNode::doubleValue, str -> LongNode.valueOf(Long.parseLong(str)), new FieldDescriptor(name));
 
-                // TODO does Toad export with precision. A NUMBER(38) = INTEGER
+            // TODO does Toad export with precision. A NUMBER(38) = INTEGER
             } else if ("INTEGER" .equals(type)) {
                 fields.optionalInt(name);
                 columnMappers[i] = new ColumnMapper(name, JsonNode::intValue, str -> IntNode.valueOf(Integer.parseInt(str)), new FieldDescriptor(name));
@@ -91,6 +91,8 @@ public class JsonOracleConverter implements MigrationConverter {
             } else {
                 throw new RuntimeException("Type not supported: " + type);
             }
+
+            i++;
         }
         avroSchema = fields.endRecord();
 
@@ -106,9 +108,9 @@ public class JsonOracleConverter implements MigrationConverter {
     public GenericRecord convert(RawdataMessage rawdataMessage) {
         byte[] data = rawdataMessage.get(documentId);
 
-        ArrayNode arrayNode;
+        JsonNode arrayNode;
         try {
-            arrayNode = (ArrayNode) mapper.readTree(data);
+            arrayNode = mapper.readTree(data);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -117,7 +119,8 @@ public class JsonOracleConverter implements MigrationConverter {
 
         for (int i = 0; i < columnMappers.length; i++) {
             ColumnMapper columnMapper = columnMappers[i];
-            ofNullable(arrayNode.get(i))
+            JsonNode node = arrayNode.get(i);
+            ofNullable(node)
                     .map(jsonNode -> valueInterceptorChain.intercept(columnMapper.fieldDescriptor, asText(jsonNode)))
                     .map(columnMapper.stringToJsonConverter)
                     .map(columnMapper.jsonToAvroConverter)

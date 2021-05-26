@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.BinaryNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import no.ssb.avro.convert.core.FieldDescriptor;
 import no.ssb.rawdata.api.RawdataMessage;
@@ -71,8 +72,13 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
                     break;
                 }
                 case NUMBER -> {
-                    fields.optionalDouble(name);
-                    columnMappers[i] = new ColumnMapper(name, JsonNode::doubleValue, str -> DoubleNode.valueOf(Double.parseDouble(str)), new FieldDescriptor(name));
+                    try {
+                        columnMappers[i] = new ColumnMapper(name, JsonNode::longValue, str -> LongNode.valueOf(Long.parseLong(str)), new FieldDescriptor(name));
+                        fields.optionalLong(name);
+                    } catch (NumberFormatException e) {
+                        columnMappers[i] = new ColumnMapper(name, JsonNode::doubleValue, str -> DoubleNode.valueOf(Double.parseDouble(str)), new FieldDescriptor(name));
+                        fields.optionalDouble(name);
+                    }
                     break;
                 }
                 case BINARY -> {
@@ -90,6 +96,8 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
                     throw new UnsupportedOperationException();
                 }
             }
+
+            i++;
         }
         avroSchema = fields.endRecord();
 
@@ -105,9 +113,9 @@ public class JsonDefaultSchemaConverter implements MigrationConverter {
     public GenericRecord convert(RawdataMessage rawdataMessage) {
         byte[] data = rawdataMessage.get(documentId);
 
-        ArrayNode arrayNode;
+        JsonNode arrayNode;
         try {
-            arrayNode = (ArrayNode) mapper.readTree(data);
+            arrayNode = mapper.readTree(data);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
