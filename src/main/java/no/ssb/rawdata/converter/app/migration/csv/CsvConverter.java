@@ -82,6 +82,10 @@ public class CsvConverter implements MigrationConverter {
                         .map(CsvSchema.Column::name)
                         .collect(Collectors.toList()));
 
+        if (csvSchema.quote() != null) {
+            csvParserSettings.getInternal().getFormat().setQuote(csvSchema.quote());
+        }
+
         internalCsvParser = new CsvParser(csvParserSettings.getInternal());
 
         return avroSchema;
