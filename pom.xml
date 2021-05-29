@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>dapla-migration-converter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>Rawdata Converter App - Migration</name>
 
     <properties>
@@ -20,7 +20,7 @@
         <connection>scm:git:git://github.com/statisticsnorway/rawdata-converter-app-migration.git</connection>
         <developerConnection>scm:git:git@github.com:statisticsnorway/rawdata-converter-app-migration.git</developerConnection>
         <url>https://github.com/statisticsnorway/rawdata-converter-app-migration</url>
-        <tag>HEAD</tag>
+        <tag>0.1.0</tag>
     </scm>
 
     <dependencies>
