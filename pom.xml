@@ -17,9 +17,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com/statisticsnorway/rawdata-converter-app-migration.git</connection>
-        <developerConnection>scm:git:git@github.com:statisticsnorway/rawdata-converter-app-migration.git</developerConnection>
-        <url>https://github.com/statisticsnorway/rawdata-converter-app-migration</url>
+        <connection>scm:git:git://github.com/statisticsnorway/dapla-migration-converter.git</connection>
+        <developerConnection>scm:git:git@github.com:statisticsnorway/dapla-migration-converter.git</developerConnection>
+        <url>https://github.com/statisticsnorway/dapla-migration-converter</url>
         <tag>HEAD</tag>
     </scm>
 
