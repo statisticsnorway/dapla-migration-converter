@@ -5,7 +5,7 @@
     <parent>
         <groupId>no.ssb.rawdata.converter.app</groupId>
         <artifactId>rawdata-converter-app-parent</artifactId>
-        <version>0.11.5</version>
+        <version>0.11.6</version>
     </parent>
 
     <artifactId>dapla-migration-converter</artifactId>
@@ -97,10 +97,11 @@
                     <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
                     <annotationProcessorPaths combine.children="append">
                     </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-Amicronaut.processing.group=no.ssb.rawdata.converter.app</arg>
+                    <compilerArgs>--enable-preview
                         <arg>-Amicronaut.processing.module=rawdata-converter-app-migration</arg>
                     </compilerArgs>
+                    <source>15</source>
+                    <target>15</target>
                 </configuration>
             </plugin>
             <plugin>
