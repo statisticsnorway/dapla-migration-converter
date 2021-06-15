@@ -5,10 +5,14 @@
 TODO: Description about the converter app
 
 ## Make targets
-
+before running local tests, you need to launch pubsub from the parent project.
+```
+../docker-compose up pubsub
+```
 You can use `make` to execute common tasks:
 
 ```
+
 build                          Build all and create docker image
 build-mvn                      Build project and install to you local maven repo
 build-docker                   Build the docker image
