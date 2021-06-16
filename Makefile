@@ -18,7 +18,7 @@ release-dryrun: ## Simulate a release in order to detect any issues
 
 .PHONY: release
 release: ## Release a new version. Update POMs and tag the new version in git
-	./mvnw release:prepare release:perform -Darguments="-Dmaven.deploy.skip=true -Dmaven.javadoc.skip=true"
+	./mvnw release:prepare release:perform -Darguments="-Dmaven.deploy.skip=true -DskipTests=true -Dmaven.javadoc.skip=true"
 
 .PHONY: changelog
 changelog: ## Generate CHANGELOG.md
