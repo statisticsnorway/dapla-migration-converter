@@ -22,7 +22,7 @@ release: ## Release a new version. Update POMs and tag the new version in git
 
 .PHONY: changelog
 changelog: ## Generate CHANGELOG.md
-	github_changelog_generator -u statisticsnorway -p rawdata-converter-app-migration
+	github_changelog_generator -u statisticsnorway -p dapla-migration-converter
 
 .PHONY: run-local
 run-local: ## Run the app locally (without docker)
